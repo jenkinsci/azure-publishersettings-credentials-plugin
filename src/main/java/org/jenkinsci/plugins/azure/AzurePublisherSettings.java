@@ -1,0 +1,148 @@
+/*
+ * The MIT License
+ *
+ *  Copyright (c) 2015, CloudBees, Inc.
+ *
+ *  Permission is hereby granted, free of charge, to any person obtaining a copy
+ *  of this software and associated documentation files (the "Software"), to deal
+ *  in the Software without restriction, including without limitation the rights
+ *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  copies of the Software, and to permit persons to whom the Software is
+ *  furnished to do so, subject to the following conditions:
+ *
+ *  The above copyright notice and this permission notice shall be included in
+ *  all copies or substantial portions of the Software.
+ *
+ *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *  THE SOFTWARE.
+ *
+ */
+
+package org.jenkinsci.plugins.azure;
+
+import com.cloudbees.plugins.credentials.CredentialsScope;
+import com.cloudbees.plugins.credentials.impl.BaseStandardCredentials;
+import hudson.Extension;
+import hudson.FilePath;
+import hudson.remoting.Callable;
+import hudson.remoting.VirtualChannel;
+import jenkins.security.MasterToSlaveCallable;
+import org.apache.commons.fileupload.FileItem;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.xml.sax.InputSource;
+
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;import java.lang.Override;import java.lang.String;
+
+/**
+ * @author <a href="mailto:nicolas.deloof@gmail.com">Nicolas De Loof</a>
+ */
+public class AzurePublisherSettings extends BaseStandardCredentials {
+
+    public static final String SUBSCRIPTION_XPATH = "/PublishData/PublishProfile/Subscription";
+
+    private final String subscriptionId;
+
+    private final String subscriptionName;
+
+    private final String serviceManagementCert;
+
+    private final String serviceManagementUrl;
+
+    @DataBoundConstructor
+    public AzurePublisherSettings(CredentialsScope scope, String id, String description, FileItem file, String fileName, String data) throws IOException {
+        super(scope, id, description);
+
+        XPath xp = XPathFactory.newInstance().newXPath();
+        InputSource ip = new InputSource(new ByteArrayInputStream(file.get()));
+        try {
+            Element node = (Element) xp.evaluate(SUBSCRIPTION_XPATH, ip, XPathConstants.NODE);
+            this.subscriptionId = node.getAttribute("Id");
+            this.subscriptionName = node.getAttribute("Name");
+            this.serviceManagementCert = node.getAttribute("ManagementCertificate");
+            this.serviceManagementUrl = node.getAttribute("ServiceManagementUrl");
+        } catch (XPathExpressionException e) {
+            throw new IOException("Invalid PublishSettings file", e);
+        }
+
+    }
+
+    public AzurePublisherSettings(CredentialsScope scope, String id, String description, String subscriptionId, String subscriptionName, String serviceManagementCert, String serviceManagementUrl) {
+        super(scope, id, description);
+        this.subscriptionId = subscriptionId;
+        this.subscriptionName = subscriptionName;
+        this.serviceManagementCert = serviceManagementCert;
+        this.serviceManagementUrl = serviceManagementUrl;
+    }
+
+    public String getSubscriptionId() {
+        return subscriptionId;
+    }
+
+    public String getSubscriptionName() {
+        return subscriptionName;
+    }
+
+    public String getServiceManagementCert() {
+        return serviceManagementCert;
+    }
+
+    public String getServiceManagementUrl() {
+        return serviceManagementUrl;
+    }
+
+    /**
+     * Rebuild a valid Publishersettings (temporary) file for use with Azure CLI or comparable tooling
+     */
+    public FilePath getPublisherSettings(VirtualChannel channel) throws InterruptedException, IOException {
+        return channel.call(new MasterToSlaveCallable   <FilePath, IOException>() {
+
+            @Override
+            public FilePath call() throws IOException {
+                File f = File.createTempFile(subscriptionId, ".publishersettings");
+                f.deleteOnExit();
+                FileWriter w = new FileWriter(f);
+                w.append("<?xml version='1.0' encoding='utf-8'?>");
+                w.append("<PublishData>");
+                w.append("  <PublishProfile");
+                w.append("    SchemaVersion='2.0'");
+                w.append("    PublishMethod='AzureServiceManagementAPI'>");
+                w.append("    <Subscription");
+                w.append("      ServiceManagementUrl='").append(serviceManagementUrl).append("'");
+                w.append("      Id='").append(subscriptionId).append("'");
+                w.append("      Name='").append(subscriptionName).append("'");
+                w.append("      ManagementCertificate='").append(serviceManagementCert).append("'/>");
+                w.append("</PublishProfile>");
+                w.append("</PublishData>");
+
+                w.flush();
+                w.close();
+
+                return new FilePath(f);
+            }
+        });
+    }
+
+    @Extension
+    public static class DescriptorImpl extends BaseStandardCredentialsDescriptor {
+
+        @Override public String getDisplayName() {
+            return "Azure Publisher Settings";
+        }
+
+    }
+}
