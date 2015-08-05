@@ -35,7 +35,7 @@
   </parent>
   <groupId>org.jenkins-ci.plugins</groupId>
   <artifactId>azure-publishersettings-credentials</artifactId>
-  <version>1.0</version>
+  <version>1.1-SNAPSHOT</version>
   <packaging>hpi</packaging>
 
   <name>Azure PublisherSettings Credentials Plugin</name>
@@ -61,7 +61,7 @@
     <connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
     <developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection>
     <url>http://github.com/jenkinsci/${project.artifactId}-plugin</url>
-    <tag>azure-publishersettings-credentials-1.0</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <repositories>
