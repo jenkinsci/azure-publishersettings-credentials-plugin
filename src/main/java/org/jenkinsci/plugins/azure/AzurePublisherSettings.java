@@ -39,14 +39,14 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
+import javax.annotation.Nonnull;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;import java.lang.Override;import java.lang.String;
+import java.io.*;
+import java.lang.Override;import java.lang.String;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author <a href="mailto:nicolas.deloof@gmail.com">Nicolas De Loof</a>
@@ -103,6 +103,25 @@ public class AzurePublisherSettings extends BaseStandardCredentials {
 
     public String getServiceManagementUrl() {
         return serviceManagementUrl;
+    }
+
+    /**
+     * @return the content of the PublisherSettings file
+     */
+    @Nonnull
+    public InputStream getPublisherSettingsFileContent() {
+        String content = "<PublishData>\n" +
+                "  <PublishProfile\n" +
+                "    SchemaVersion='2.0'\n" +
+                "    PublishMethod='AzureServiceManagementAPI'>\n" +
+                "    <Subscription\n" +
+                "      ServiceManagementUrl='" + serviceManagementUrl + "'\n" +
+                "      Id='" + subscriptionId + "'\n" +
+                "      Name='" + subscriptionName + "'\n" +
+                "      ManagementCertificate='" + serviceManagementCert + "'/>\n" +
+                "</PublishProfile>\n" +
+                "</PublishData>\n";
+        return new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
