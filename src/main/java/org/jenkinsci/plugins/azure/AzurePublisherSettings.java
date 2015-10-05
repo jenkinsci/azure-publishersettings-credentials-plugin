@@ -105,22 +105,28 @@ public class AzurePublisherSettings extends BaseStandardCredentials {
         return serviceManagementUrl;
     }
 
+    private String getPublisherSettings() {
+        return
+            "<?xml version='1.0' encoding='utf-8'?>\n" +
+            "<PublishData>\n" +
+            "  <PublishProfile\n" +
+            "    SchemaVersion='2.0'\n" +
+            "    PublishMethod='AzureServiceManagementAPI'>\n" +
+            "    <Subscription\n" +
+            "      ServiceManagementUrl='" + serviceManagementUrl + "'\n" +
+            "      Id='" + subscriptionId + "'\n" +
+            "      Name='" + subscriptionName + "'\n" +
+            "      ManagementCertificate='" + serviceManagementCert + "'/>\n" +
+            "  </PublishProfile>\n" +
+            "</PublishData>\n";
+    }
+
     /**
      * @return the content of the PublisherSettings file
      */
     @Nonnull
     public InputStream getPublisherSettingsFileContent() {
-        String content = "<PublishData>\n" +
-                "  <PublishProfile\n" +
-                "    SchemaVersion='2.0'\n" +
-                "    PublishMethod='AzureServiceManagementAPI'>\n" +
-                "    <Subscription\n" +
-                "      ServiceManagementUrl='" + serviceManagementUrl + "'\n" +
-                "      Id='" + subscriptionId + "'\n" +
-                "      Name='" + subscriptionName + "'\n" +
-                "      ManagementCertificate='" + serviceManagementCert + "'/>\n" +
-                "</PublishProfile>\n" +
-                "</PublishData>\n";
+        String content = getPublisherSettings();
         return new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
     }
 
@@ -134,23 +140,7 @@ public class AzurePublisherSettings extends BaseStandardCredentials {
             public FilePath call() throws IOException {
                 File f = File.createTempFile(subscriptionId, ".publishersettings");
                 f.deleteOnExit();
-                FileWriter w = new FileWriter(f);
-                w.append("<?xml version='1.0' encoding='utf-8'?>");
-                w.append("<PublishData>");
-                w.append("  <PublishProfile");
-                w.append("    SchemaVersion='2.0'");
-                w.append("    PublishMethod='AzureServiceManagementAPI'>");
-                w.append("    <Subscription");
-                w.append("      ServiceManagementUrl='").append(serviceManagementUrl).append("'");
-                w.append("      Id='").append(subscriptionId).append("'");
-                w.append("      Name='").append(subscriptionName).append("'");
-                w.append("      ManagementCertificate='").append(serviceManagementCert).append("'/>");
-                w.append("</PublishProfile>");
-                w.append("</PublishData>");
-
-                w.flush();
-                w.close();
-
+                FileUtils.write(f, getPublisherSettings());
                 return new FilePath(f);
             }
         });
