@@ -33,6 +33,8 @@ import hudson.remoting.Callable;
 import hudson.remoting.VirtualChannel;
 import jenkins.security.MasterToSlaveCallable;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -63,7 +65,7 @@ public class AzurePublisherSettings extends BaseStandardCredentials {
 
     private final String serviceManagementUrl;
 
-    @DataBoundConstructor
+/*
     public AzurePublisherSettings(CredentialsScope scope, String id, String description, FileItem file, String fileName, String data) throws IOException {
         super(scope, id, description);
 
@@ -78,9 +80,9 @@ public class AzurePublisherSettings extends BaseStandardCredentials {
         } catch (XPathExpressionException e) {
             throw new IOException("Invalid PublishSettings file", e);
         }
+    }*/
 
-    }
-
+    @DataBoundConstructor
     public AzurePublisherSettings(CredentialsScope scope, String id, String description, String subscriptionId, String subscriptionName, String serviceManagementCert, String serviceManagementUrl) {
         super(scope, id, description);
         this.subscriptionId = subscriptionId;
