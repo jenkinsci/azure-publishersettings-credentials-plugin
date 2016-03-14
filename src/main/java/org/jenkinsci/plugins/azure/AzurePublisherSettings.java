@@ -35,7 +35,6 @@ import jenkins.security.MasterToSlaveCallable;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.jenkinsci.plugins.plaincredentials.FileCredentials;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -54,7 +53,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * @author <a href="mailto:nicolas.deloof@gmail.com">Nicolas De Loof</a>
  */
-public class AzurePublisherSettings extends BaseStandardCredentials implements FileCredentials {
+public class AzurePublisherSettings extends BaseStandardCredentials {
 
     public static final String SUBSCRIPTION_XPATH = "/PublishData/PublishProfile/Subscription";
 
@@ -147,18 +146,6 @@ public class AzurePublisherSettings extends BaseStandardCredentials implements F
                 return new FilePath(f);
             }
         });
-    }
-
-    @Nonnull
-    @Override
-    public String getFileName() {
-        return getId() + ".publishsettings";
-    }
-
-    @Nonnull
-    @Override
-    public InputStream getContent() throws IOException {
-        return getPublisherSettingsFileContent();
     }
 
     @Extension
