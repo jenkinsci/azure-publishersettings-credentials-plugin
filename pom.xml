@@ -30,17 +30,19 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>1.609.1</version>
-    <relativePath />
+    <version>2.9</version>
   </parent>
-  <groupId>org.jenkins-ci.plugins</groupId>
   <artifactId>azure-publishersettings-credentials</artifactId>
   <version>1.2-SNAPSHOT</version>
   <packaging>hpi</packaging>
 
   <name>Azure PublisherSettings Credentials Plugin</name>
-  <description>TODO</description>
+  <description>Manage Azure PublisherSettings using Jenkins Credentials API</description>
   <url>https://wiki.jenkins-ci.org/display/JENKINS/Azure+PublisherSettings+Credentials+Plugin</url>
+
+  <properties>
+    <jenkins.version>1.609.1</jenkins.version>
+  </properties>
 
   <licenses>
     <license>
