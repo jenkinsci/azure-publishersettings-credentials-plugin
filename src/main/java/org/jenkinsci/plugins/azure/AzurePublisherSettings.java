@@ -29,25 +29,16 @@ import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.impl.BaseStandardCredentials;
 import hudson.Extension;
 import hudson.FilePath;
-import hudson.remoting.Callable;
 import hudson.remoting.VirtualChannel;
 import jenkins.security.MasterToSlaveCallable;
-import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.xml.sax.InputSource;
 
 import javax.annotation.Nonnull;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-import java.io.*;
-import java.lang.Override;import java.lang.String;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 /**

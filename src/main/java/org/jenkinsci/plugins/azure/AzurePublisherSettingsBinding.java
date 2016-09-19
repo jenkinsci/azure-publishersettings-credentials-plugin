@@ -88,8 +88,11 @@ public class AzurePublisherSettingsBinding extends Binding<AzurePublisherSetting
 
     private static FilePath secretsDir(FilePath workspace) {
         Computer computer = workspace.toComputer();
-        Node node = computer == null ? null : computer.getNode();
-        FilePath root = node == null ? workspace : node.getRootPath();
+        Node node = (computer == null ? null : computer.getNode());
+        FilePath root = workspace;
+        if (node != null && node.getRootPath() != null) {
+            root = node.getRootPath();
+        }
         return root.child("secretFiles");
     }
 
