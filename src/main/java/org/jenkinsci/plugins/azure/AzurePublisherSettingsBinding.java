@@ -28,10 +28,9 @@ package org.jenkinsci.plugins.azure;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
-import hudson.model.Computer;
-import hudson.model.Node;
 import hudson.model.Run;
 import hudson.model.TaskListener;
+import hudson.slaves.WorkspaceList;
 import org.jenkinsci.plugins.credentialsbinding.Binding;
 import org.jenkinsci.plugins.credentialsbinding.BindingDescriptor;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -87,13 +86,7 @@ public class AzurePublisherSettingsBinding extends Binding<AzurePublisherSetting
     }
 
     private static FilePath secretsDir(FilePath workspace) {
-        Computer computer = workspace.toComputer();
-        Node node = (computer == null ? null : computer.getNode());
-        FilePath root = workspace;
-        if (node != null && node.getRootPath() != null) {
-            root = node.getRootPath();
-        }
-        return root.child("secretFiles");
+        return WorkspaceList.tempDir(workspace);
     }
 
     @Extension
