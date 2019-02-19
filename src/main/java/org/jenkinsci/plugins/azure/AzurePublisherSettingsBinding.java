@@ -44,8 +44,9 @@ import java.util.UUID;
 public class AzurePublisherSettingsBinding extends Binding<AzurePublisherSettings> {
 
     @DataBoundConstructor
-    public AzurePublisherSettingsBinding(String variable, String credentialsId) {
+    public AzurePublisherSettingsBinding(String variable, String credentialsId) throws IllegalStateException {
         super(variable, credentialsId);
+        throw new IllegalStateException("This plugin has been tombstoned.");
     }
 
     @Override
@@ -56,37 +57,9 @@ public class AzurePublisherSettingsBinding extends Binding<AzurePublisherSetting
 
     // Mostly a copy paste from org.jenkinsci.plugins.credentialsbinding.impl.FileBinding
 
-    @Override public SingleEnvironment bindSingle(Run<?,?> build, FilePath workspace, Launcher launcher, TaskListener listener) throws IOException, InterruptedException {
-        AzurePublisherSettings credentials = getCredentials(build);
-        FilePath secrets = secretsDir(workspace);
-        String dirName = UUID.randomUUID().toString();
-        final FilePath dir = secrets.child(dirName);
-        dir.mkdirs();
-        secrets.chmod(/*0700*/448);
-        FilePath secret = dir.child(credentials.getId()+".publishsettings");
-        secret.copyFrom(credentials.getPublisherSettingsFileContent());
-        secret.chmod(0400);
-        return new SingleEnvironment(secret.getRemote(), new UnbinderImpl(dirName));
-    }
-
-    private static class UnbinderImpl implements Unbinder {
-
-        private static final long serialVersionUID = 1;
-
-        private final String dirName;
-
-        UnbinderImpl(String dirName) {
-            this.dirName = dirName;
-        }
-
-        @Override public void unbind(Run<?, ?> build, FilePath workspace, Launcher launcher, TaskListener listener) throws IOException, InterruptedException {
-            secretsDir(workspace).child(dirName).deleteRecursive();
-        }
-
-    }
-
-    private static FilePath secretsDir(FilePath workspace) {
-        return WorkspaceList.tempDir(workspace);
+    @Override public SingleEnvironment bindSingle(Run<?,?> build, FilePath workspace, Launcher launcher,
+                                                  TaskListener listener) throws IllegalStateException {
+        throw new IllegalStateException("This plugin has been tombstoned.");
     }
 
     @Extension

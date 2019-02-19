@@ -28,115 +28,21 @@ package org.jenkinsci.plugins.azure;
 import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.impl.BaseStandardCredentials;
 import hudson.Extension;
-import hudson.FilePath;
-import hudson.remoting.VirtualChannel;
-import jenkins.security.MasterToSlaveCallable;
-import org.apache.commons.io.FileUtils;
+
 import org.kohsuke.stapler.DataBoundConstructor;
 
-import javax.annotation.Nonnull;
-import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 
 /**
  * @author <a href="mailto:nicolas.deloof@gmail.com">Nicolas De Loof</a>
  */
 public class AzurePublisherSettings extends BaseStandardCredentials {
 
-    public static final String SUBSCRIPTION_XPATH = "/PublishData/PublishProfile/Subscription";
-
-    private final String subscriptionId;
-
-    private final String subscriptionName;
-
-    private final String serviceManagementCert;
-
-    private final String serviceManagementUrl;
-
-/*
-    public AzurePublisherSettings(CredentialsScope scope, String id, String description, FileItem file, String fileName, String data) throws IOException {
-        super(scope, id, description);
-
-        XPath xp = XPathFactory.newInstance().newXPath();
-        InputSource ip = new InputSource(new ByteArrayInputStream(file.get()));
-        try {
-            Element node = (Element) xp.evaluate(SUBSCRIPTION_XPATH, ip, XPathConstants.NODE);
-            this.subscriptionId = node.getAttribute("Id");
-            this.subscriptionName = node.getAttribute("Name");
-            this.serviceManagementCert = node.getAttribute("ManagementCertificate");
-            this.serviceManagementUrl = node.getAttribute("ServiceManagementUrl");
-        } catch (XPathExpressionException e) {
-            throw new IOException("Invalid PublishSettings file", e);
-        }
-    }*/
-
     @DataBoundConstructor
-    public AzurePublisherSettings(CredentialsScope scope, String id, String description, String subscriptionId, String subscriptionName, String serviceManagementCert, String serviceManagementUrl) {
+    public AzurePublisherSettings(CredentialsScope scope, String id, String description, String subscriptionId,
+                                  String subscriptionName, String serviceManagementCert, String serviceManagementUrl) throws IllegalStateException {
         super(scope, id, description);
-        this.subscriptionId = subscriptionId;
-        this.subscriptionName = subscriptionName;
-        this.serviceManagementCert = serviceManagementCert;
-        this.serviceManagementUrl = serviceManagementUrl;
-    }
-
-    public String getSubscriptionId() {
-        return subscriptionId;
-    }
-
-    public String getSubscriptionName() {
-        return subscriptionName;
-    }
-
-    public String getServiceManagementCert() {
-        return serviceManagementCert;
-    }
-
-    public String getServiceManagementUrl() {
-        return serviceManagementUrl;
-    }
-
-    private String getPublisherSettings() {
-        return
-            "<?xml version='1.0' encoding='utf-8'?>\n" +
-            "<PublishData>\n" +
-            "  <PublishProfile\n" +
-            "    SchemaVersion='2.0'\n" +
-            "    PublishMethod='AzureServiceManagementAPI'>\n" +
-            "    <Subscription\n" +
-            "      ServiceManagementUrl='" + serviceManagementUrl + "'\n" +
-            "      Id='" + subscriptionId + "'\n" +
-            "      Name='" + subscriptionName + "'\n" +
-            "      ManagementCertificate='" + serviceManagementCert + "'/>\n" +
-            "  </PublishProfile>\n" +
-            "</PublishData>\n";
-    }
-
-    /**
-     * @return the content of the PublisherSettings file
-     */
-    @Nonnull
-    public InputStream getPublisherSettingsFileContent() {
-        String content = getPublisherSettings();
-        return new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
-    }
-
-    /**
-     * Rebuild a valid Publishersettings (temporary) file for use with Azure CLI or comparable tooling
-     */
-    public FilePath getPublisherSettings(VirtualChannel channel) throws InterruptedException, IOException {
-        return channel.call(new MasterToSlaveCallable   <FilePath, IOException>() {
-
-            @Override
-            public FilePath call() throws IOException {
-                File f = File.createTempFile(subscriptionId, ".publishersettings");
-                f.deleteOnExit();
-                FileUtils.write(f, getPublisherSettings());
-                return new FilePath(f);
-            }
-        });
+        throw new IllegalStateException("This plugin has been tombstoned.");
     }
 
     @Extension

@@ -25,5 +25,10 @@
   -->
 
 <div>
-  This plugin manage Azure PublisherSettings using Jenkins Crendentials API.
+  This plugin manage Azure PublisherSettings using Jenkins Credentials API.
+  <div/>
+  <label class="error">
+    This plugin has been disabled and must not be used. For an alternative, please look at the
+    <a href="https://plugins.jenkins.io/azure-cli">OSS Azure CLI Jenkins plugin</a>.
+  </label>
 </div>

@@ -25,7 +25,12 @@
   -->
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:st="jelly:stapler" xmlns:c="/lib/credentials">
-  <f:entry title="${%Variable}" field="variable">
-    <f:textbox/>
-  </f:entry>
+  <f:block>
+      <label class="error">
+        The Jenkins Azure Publisher Settings Plugin is deprecated with the deprecation of Azure classic deployments and
+        their replacement by ARM deployments. Please see recent Jenkins Azure plugins for alternatives (Azure App
+        Service, Azure Functions, Azure Container Service...) at <a href="https://plugins.jenkins.io/">https://plugins
+        .jenkins.io/</a>.
+      </label>
+    </f:block>
 </j:jelly>
